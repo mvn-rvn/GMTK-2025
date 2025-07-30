@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using System.Collections;
 
 public class P_Movement : MonoBehaviour
 {
@@ -7,8 +9,20 @@ public class P_Movement : MonoBehaviour
     BoxCollider2D bounding_box;
     CapsuleCollider2D hitbox;
 
-    float input_horizontal;
-    public float move_speed;
+    InputAction move_action;
+    bool grounded = false;
+    bool jumping = false;
+    public float move_speed = 30f;
+    public float jump_speed = 30f;
+    public float jump_variability_time = 0.25f;
+    bool fast_falling = false;
+
+    public float normal_gravity = 2.5f;
+    public float fastfall_gravity = 3f;
+    InputAction fastfall_action;
+
+    bool double_jump_available = false;
+    bool double_jumped = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -16,18 +30,92 @@ public class P_Movement : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         bounding_box = gameObject.GetComponent<BoxCollider2D>();
         hitbox = gameObject.GetComponent<CapsuleCollider2D>();
+
+        move_action = InputSystem.actions.FindAction("Move");
+        fastfall_action = InputSystem.actions.FindAction("Fastfall");
     }
 
     // Update is called once per frame
     void Update()
     {
-        input_horizontal = Input.GetAxis("Horizontal");
+        grounded = CheckGrounded();
 
+        if (grounded)
+        {
+            double_jump_available = true;
+        }
+
+        if (grounded && InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
+        {
+            jumping = true;
+        }
+        else if (double_jump_available && InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
+        {
+            jumping = true;
+            double_jump_available = false;
+            double_jumped = true;
+        }
+
+        fast_falling = (fastfall_action.ReadValue<Vector2>().y == -1f) && !jumping;
+
+        if (fast_falling)
+        {
+            rb.gravityScale = fastfall_gravity;
+        }
+        else
+        {
+            rb.gravityScale = normal_gravity;
+        }
     }
 
     void FixedUpdate()
     {
+        float input_horizontal = move_action.ReadValue<Vector2>().x;
         float move_velocity = input_horizontal * move_speed * Time.fixedDeltaTime;
         rb.linearVelocityX = move_velocity;
+
+        if (jumping)
+        {
+            rb.linearVelocityY = jump_speed;
+            if (!double_jumped)
+            {
+                StartCoroutine("JumpHeightVariability", jump_variability_time);
+            }
+            else
+            {
+                double_jumped = false;
+                StartCoroutine("JumpHeightVariability", jump_variability_time / 2);
+            }
+        }
+    }
+
+    bool CheckGrounded()
+    {
+        RaycastHit2D boxcast_hit = Physics2D.BoxCast(
+            transform.position, //origin
+            new Vector2(transform.localScale.x - 0.1f, 0.1f), //size
+            0f, //angle
+            Vector2.down, //cast direction
+            transform.localScale.y / 2, //cast distance
+            LayerMask.GetMask("Walls") //filters for only Walls layer
+        );
+
+        if (boxcast_hit)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    IEnumerator JumpHeightVariability(float variability_time)
+    {
+        float elapsed_time = 0f;
+        while (elapsed_time < variability_time && InputSystem.actions.FindAction("Jump").IsPressed())
+        {
+            elapsed_time += Time.deltaTime;
+            rb.linearVelocityY = jump_speed;
+            yield return null;
+        }
+        jumping = false;
     }
 }
