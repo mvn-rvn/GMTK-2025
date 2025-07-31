@@ -13,7 +13,8 @@ public class P_Movement : MonoBehaviour
     InputAction move_action;
     [HideInInspector]
     public bool grounded = false;
-    bool jumping = false;
+    [HideInInspector]
+    public bool jumping = false;
     public float move_speed = 30f;
     public float jump_speed = 30f;
     [HideInInspector]
@@ -27,7 +28,8 @@ public class P_Movement : MonoBehaviour
     InputAction fastfall_action;
 
     bool double_jump_available = false;
-    bool double_jumped = false;
+    [HideInInspector]
+    public bool double_jumped = false;
 
     [HideInInspector]
     public float direction = 1f;

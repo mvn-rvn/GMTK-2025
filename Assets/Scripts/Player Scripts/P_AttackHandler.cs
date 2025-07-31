@@ -11,11 +11,25 @@ public class P_AttackHandler : MonoBehaviour
 
     CapsuleCollider2D g_attack_1_hitbox;
     CircleCollider2D g_attack_2_hitbox;
+    CircleCollider2D a_attack_1_hitbox;
+    CircleCollider2D a_attack_2_hitbox;
 
     Vector2 scale_original;
     Vector2 position_original;
 
     InputAction attack_action;
+
+    [HideInInspector]
+    public bool attacking = false;
+    [HideInInspector]
+    public bool combo_attack_window = false;
+    bool attack_buffer_window = false;
+    bool attack_input_buffer = false;
+
+    Coroutine slide_running;
+
+    [HideInInspector]
+    public bool flipping = true;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,6 +40,8 @@ public class P_AttackHandler : MonoBehaviour
 
         g_attack_1_hitbox = GameObject.Find("Grounded Attack 1").GetComponent<CapsuleCollider2D>();
         g_attack_2_hitbox = GameObject.Find("Grounded Attack 2").GetComponent<CircleCollider2D>();
+        a_attack_1_hitbox = GameObject.Find("Aerial Attack 1").GetComponent<CircleCollider2D>();
+        a_attack_2_hitbox = GameObject.Find("Aerial Attack 2").GetComponent<CircleCollider2D>();
 
         scale_original = transform.localScale;
         position_original = transform.localPosition;
@@ -36,12 +52,38 @@ public class P_AttackHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.localScale = new Vector2(scale_original.x * p_movement.direction, scale_original.y);
-        transform.localPosition = new Vector2(position_original.x * p_movement.direction, position_original.y);
+        if (flipping)
+        {
+            transform.localScale = new Vector2(scale_original.x * p_movement.direction, scale_original.y);
+            transform.localPosition = new Vector2(position_original.x * p_movement.direction, position_original.y);
+        }
 
-        if (attack_action.WasPressedThisFrame() && p_movement.grounded)
+        if (attack_action.WasPressedThisFrame() && attack_buffer_window)
+        {
+            attack_input_buffer = true;
+        }
+
+        if (attack_action.WasPressedThisFrame() && p_movement.grounded && !attacking && !combo_attack_window)
         {
             StartCoroutine(FirstGroundedAttack());
+        }
+        else if (attack_action.WasPressedThisFrame() && p_movement.grounded && !attacking && combo_attack_window)
+        {
+            StartCoroutine(SecondGroundedAttack());
+        }
+        else if (attack_action.WasPressedThisFrame() && !p_movement.grounded && !attacking && !combo_attack_window)
+        {
+            StartCoroutine(FirstAerialAttack());
+        }
+        else if (attack_action.WasPressedThisFrame() && !p_movement.grounded && !attacking && combo_attack_window)
+        {
+            StartCoroutine(SecondAerialAttack());
+        }
+        else if (attack_input_buffer && !attacking && combo_attack_window)
+        {
+            attack_buffer_window = false;
+            attack_input_buffer = false;
+            StartCoroutine(BufferWait());
         }
     }
 
@@ -68,23 +110,114 @@ public class P_AttackHandler : MonoBehaviour
         }
     }
 
-    IEnumerator FirstGroundedAttack()
+    IEnumerator BufferWait()
     {
-        p_movement.enabled = false;
-        animator.Play("AttackPrototype1");
-        if (p_movement.input_horizontal != 0)
+        while (!combo_attack_window)
         {
-            StartCoroutine(Slide(400f * Time.fixedDeltaTime * 2f, 400f * Time.fixedDeltaTime * 6f));
+            yield return null;
+        }
+
+        if (p_movement.grounded)
+        {
+            StartCoroutine(SecondGroundedAttack());
         }
         else
         {
-            StartCoroutine(Slide(400f * Time.fixedDeltaTime * 1.5f, 400f * Time.fixedDeltaTime * 5f));
+            StartCoroutine(SecondAerialAttack());
+        }
+    }
+
+    IEnumerator FirstGroundedAttack()
+    {
+        p_movement.enabled = false;
+        attacking = true;
+        animator.Play("AttackPrototype1");
+        if (p_movement.input_horizontal != 0)
+        {
+            slide_running = StartCoroutine(Slide(400f * Time.fixedDeltaTime * 2f, 400f * Time.fixedDeltaTime * 6f));
+        }
+        else
+        {
+            slide_running = StartCoroutine(Slide(400f * Time.fixedDeltaTime * 1.5f, 400f * Time.fixedDeltaTime * 5f));
         }
         yield return new WaitForSeconds(1f / 14f);
         g_attack_1_hitbox.enabled = true;
-        yield return new WaitForSeconds(2f / 14f);
+        yield return new WaitForSeconds(1f / 14f);
+        attack_buffer_window = true;
+        yield return new WaitForSeconds(1f / 14f);
         g_attack_1_hitbox.enabled = false;
         yield return new WaitForSeconds(1f / 14f);
+        attacking = false;
+        attack_buffer_window = false;
+        combo_attack_window = true;
+        yield return new WaitForSeconds(1f / 14f);
+        if (!attacking)
+        {
+            p_movement.enabled = true;
+        }
+        yield return new WaitForSeconds(0.2f);
+        combo_attack_window = false;
+    }
+
+    IEnumerator SecondGroundedAttack()
+    {
+        p_movement.enabled = false;
+        attacking = true;
+        combo_attack_window = false;
+        animator.Play("AttackPrototype2");
+        if (slide_running != null)
+        {
+            StopCoroutine(slide_running);
+        }
+        StartCoroutine(Slide(400f * Time.fixedDeltaTime * 1.5f, 400f * Time.fixedDeltaTime * 5f));
+        yield return new WaitForSeconds(1f / 14f);
+        g_attack_2_hitbox.enabled = true;
+        yield return new WaitForSeconds(1f / 14f);
+        yield return new WaitForSeconds(1f / 14f);
+        g_attack_2_hitbox.enabled = false;
+        yield return new WaitForSeconds(1f / 14f);
+        yield return new WaitForSeconds(1f / 14f);
+        yield return new WaitForSeconds(1f / 14f);
+        attacking = false;
         p_movement.enabled = true;
+    }
+
+    IEnumerator FirstAerialAttack()
+    {
+        flipping = false;
+        attacking = true;
+        animator.Play("AttackJumpPrototype1");
+        yield return new WaitForSeconds(1f / 14f);
+        a_attack_1_hitbox.enabled = true;
+        yield return new WaitForSeconds(1f / 14f);
+        attack_buffer_window = true;
+        yield return new WaitForSeconds(1f / 14f);
+        a_attack_1_hitbox.enabled = false;
+        yield return new WaitForSeconds(1f / 14f);
+        attacking = false;
+        attack_buffer_window = false;
+        combo_attack_window = true;
+        flipping = true;
+        yield return new WaitForSeconds(1f / 14f);
+        yield return new WaitForSeconds(0.2f);
+        combo_attack_window = false;
+    }
+    
+       IEnumerator SecondAerialAttack()
+    {
+        yield return null;
+        flipping = false;
+        attacking = true;
+        combo_attack_window = false;
+        animator.Play("AttackJumpPrototype2");
+        yield return new WaitForSeconds(1f / 14f);
+        a_attack_2_hitbox.enabled = true;
+        yield return new WaitForSeconds(1f / 14f);
+        yield return new WaitForSeconds(1f / 14f);
+        a_attack_2_hitbox.enabled = false;
+        yield return new WaitForSeconds(1f / 14f);
+        yield return new WaitForSeconds(1f / 14f);
+        attacking = false;
+        flipping = true;
     }
 }

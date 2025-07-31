@@ -24,18 +24,32 @@ public class P_AnimHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.localScale = new Vector2(scale_original.x * p_movement.direction, scale_original.y);
-        transform.localPosition = new Vector2(position_original.x * p_movement.direction, position_original.y);
+        if (GameObject.Find("Player Attack Manager").GetComponent<P_AttackHandler>().flipping)
+        {
+            transform.localScale = new Vector2(scale_original.x * p_movement.direction, scale_original.y);
+            transform.localPosition = new Vector2(position_original.x * p_movement.direction, position_original.y);
+        }
 
         if (p_movement.input_horizontal != 0)
+            {
+                animator.SetBool("Standing", false);
+                animator.SetBool("Running", true);
+            }
+            else
+            {
+                animator.SetBool("Standing", true);
+                animator.SetBool("Running", false);
+            }
+
+        animator.SetBool("Grounded", p_movement.grounded);
+
+        if (p_movement.jumping && !GameObject.Find("Player Attack Manager").GetComponent<P_AttackHandler>().attacking)
         {
-            animator.SetBool("Standing", false);
-            animator.SetBool("Running", true);
-        }
-        else
-        {
-            animator.SetBool("Standing", true);
-            animator.SetBool("Running", false);
+            if (p_movement.double_jumped)
+            {
+                animator.Play("JumpPrototype", -1, 0f);
+            }
+            animator.Play("JumpPrototype");
         }
     }
 }
