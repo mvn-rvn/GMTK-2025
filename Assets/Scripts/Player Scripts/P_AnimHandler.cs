@@ -27,7 +27,7 @@ public class P_AnimHandler : MonoBehaviour
         transform.localScale = new Vector2(scale_original.x * p_movement.direction, scale_original.y);
         transform.localPosition = new Vector2(position_original.x * p_movement.direction, position_original.y);
 
-        if (p_movement.input_horizontal != 0f)
+        if (p_movement.input_horizontal != 0)
         {
             animator.SetBool("Standing", false);
             animator.SetBool("Running", true);
