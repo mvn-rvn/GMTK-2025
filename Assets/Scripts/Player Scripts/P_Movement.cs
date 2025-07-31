@@ -11,10 +11,13 @@ public class P_Movement : MonoBehaviour
     CapsuleCollider2D hurtbox;
 
     InputAction move_action;
-    bool grounded = false;
+    [HideInInspector]
+    public bool grounded = false;
     bool jumping = false;
     public float move_speed = 30f;
     public float jump_speed = 30f;
+    [HideInInspector]
+    public float input_horizontal = 0f;
     public float jump_variability_time = 0.25f;
     bool fast_falling = false;
 
@@ -79,7 +82,7 @@ public class P_Movement : MonoBehaviour
 
     void FixedUpdate()
     {
-        float input_horizontal = move_action.ReadValue<Vector2>().x;
+        input_horizontal = move_action.ReadValue<Vector2>().x;
         float move_velocity = input_horizontal * move_speed * Time.fixedDeltaTime;
         rb.linearVelocityX = move_velocity;
 
