@@ -33,11 +33,6 @@ public class StringController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SnapString();
-        }
-
         if (snapped)
         {
             Anchor1.transform.position = Vector3.Lerp(Anchor1.transform.position, enemy1.transform.position, snapSpeed);
@@ -78,7 +73,7 @@ public class StringController : MonoBehaviour
     {
         enemy1.GetComponent<EnemyHealth>().DetachString(this);
         enemy2.GetComponent<EnemyHealth>().DetachString(this);
-        Instantiate(particleEffect);
+        Instantiate(particleEffect, stringCenter.transform, false);
 
         snapped = true;
     }

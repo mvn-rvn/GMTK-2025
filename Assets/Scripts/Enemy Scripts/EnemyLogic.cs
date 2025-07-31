@@ -2,15 +2,31 @@ using UnityEngine;
 
 public class EnemyLogic : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private float knockbackMultiplier;
+    [SerializeField] private float drag;
+
+    private Rigidbody2D rb;
+    
+
+    private void Start()
     {
-        
+        rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        P_AttackHandler playerAtk = collision.GetComponentInParent<P_AttackHandler>();
+        float knockback = Vector3.Normalize(gameObject.transform.position - playerAtk.gameObject.transform.position).x * knockbackMultiplier;
+        rb.linearVelocity = Vector3.right * knockback;
+        Debug.Log(playerAtk);
+    }
+
+    private void FixedUpdate()
+    {
+        if (rb.linearVelocity.magnitude > 0)
+        {
+            float velMod = 1 - drag;
+            rb.linearVelocity *= new Vector2(velMod, velMod);
+        }
     }
 }
