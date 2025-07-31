@@ -14,10 +14,10 @@ TagManager:
   - 
   - 
   - Walls
-  - Hitboxes
-  - 
-  - 
-  - 
+  - Player Hitboxes
+  - Player Hurtboxes
+  - Enemy Hitboxes
+  - Enemy Hurtboxes
   - 
   - 
   - 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System;
 
 public class P_Movement : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class P_Movement : MonoBehaviour
 
     bool double_jump_available = false;
     bool double_jumped = false;
+
+    [HideInInspector]
+    public float direction = 1f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -79,6 +83,11 @@ public class P_Movement : MonoBehaviour
         float move_velocity = input_horizontal * move_speed * Time.fixedDeltaTime;
         rb.linearVelocityX = move_velocity;
 
+        if (input_horizontal != 0f)
+        {
+            direction = input_horizontal;
+        }
+
         if (jumping)
         {
             rb.linearVelocityY = jump_speed;
@@ -98,7 +107,7 @@ public class P_Movement : MonoBehaviour
     {
         RaycastHit2D boxcast_hit = Physics2D.BoxCast(
             transform.position, //origin
-            new Vector2(transform.localScale.x - 0.1f, 0.1f), //size
+            new Vector2(Mathf.Abs(transform.localScale.x) - 0.1f, 0.1f), //size
             0f, //angle
             Vector2.down, //cast direction
             transform.localScale.y / 2, //cast distance
