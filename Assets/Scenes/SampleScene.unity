@@ -557,7 +557,8 @@ MonoBehaviour:
   jump_speed: 9
   jump_variability_time: 0.11
   normal_gravity: 3
-  fastfall_gravity: 7.5
+  fastfall_gravity: 6
+  fastfall_vcap: -3
 --- !u!1 &887536343
 GameObject:
   m_ObjectHideFlags: 0

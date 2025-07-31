@@ -19,6 +19,7 @@ public class P_Movement : MonoBehaviour
 
     public float normal_gravity = 2.5f;
     public float fastfall_gravity = 3f;
+    public float fastfall_vcap = 0f;
     InputAction fastfall_action;
 
     bool double_jump_available = false;
@@ -60,6 +61,10 @@ public class P_Movement : MonoBehaviour
 
         if (fast_falling)
         {
+            if (rb.linearVelocityY > fastfall_vcap && !grounded)
+            {
+                rb.linearVelocityY = fastfall_vcap;
+            }
             rb.gravityScale = fastfall_gravity;
         }
         else
