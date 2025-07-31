@@ -22,6 +22,8 @@ public class StringController : MonoBehaviour
     [SerializeField] private float fadeSpeed = 0.9f;
     [SerializeField] private float deathTimer = 0.4f;
 
+    [SerializeField] private GameObject particleEffect;
+
     private void Start()
     {
         enemy1.GetComponent<EnemyHealth>().AttachString(this);
@@ -38,7 +40,7 @@ public class StringController : MonoBehaviour
 
         if (snapped)
         {
-            stringEnd1.transform.position = Vector3.Lerp(stringEnd1.transform.position, enemy1.transform.position, snapSpeed);
+            Anchor1.transform.position = Vector3.Lerp(Anchor1.transform.position, enemy1.transform.position, snapSpeed);
             Anchor2.transform.position = Vector3.Lerp(Anchor2.transform.position, enemy2.transform.position, snapSpeed);
 
             //can't be called string bc its a type
@@ -58,8 +60,8 @@ public class StringController : MonoBehaviour
         stringCenter.transform.position = Vector3.Lerp(stringCenter.transform.position, endPos, 0.01f);
 
         //String Group 1
-        Anchor1.transform.position = enemy1.transform.position;
-        stringEnd1.transform.position = stringCenter.transform.position;
+        Anchor1.transform.position = stringCenter.transform.position;
+        stringEnd1.transform.position = enemy1.transform.position;
 
         //String Group 2
         Anchor2.transform.position = stringCenter.transform.position;
@@ -76,6 +78,7 @@ public class StringController : MonoBehaviour
     {
         enemy1.GetComponent<EnemyHealth>().DetachString(this);
         enemy2.GetComponent<EnemyHealth>().DetachString(this);
+        Instantiate(particleEffect);
 
         snapped = true;
     }
