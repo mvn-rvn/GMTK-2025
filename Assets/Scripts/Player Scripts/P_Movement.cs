@@ -8,7 +8,7 @@ public class P_Movement : MonoBehaviour
 
     Rigidbody2D rb;
     BoxCollider2D bounding_box;
-    CapsuleCollider2D hitbox;
+    CapsuleCollider2D hurtbox;
 
     InputAction move_action;
     bool grounded = false;
@@ -34,7 +34,7 @@ public class P_Movement : MonoBehaviour
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         bounding_box = gameObject.GetComponent<BoxCollider2D>();
-        hitbox = gameObject.GetComponent<CapsuleCollider2D>();
+        hurtbox = gameObject.GetComponent<CapsuleCollider2D>();
 
         move_action = InputSystem.actions.FindAction("Move");
         fastfall_action = InputSystem.actions.FindAction("Fastfall");
@@ -107,10 +107,10 @@ public class P_Movement : MonoBehaviour
     {
         RaycastHit2D boxcast_hit = Physics2D.BoxCast(
             transform.position, //origin
-            new Vector2(Mathf.Abs(transform.localScale.x) - 0.1f, 0.1f), //size
+            new Vector2(bounding_box.size.x - 0.1f, 0.1f), //size
             0f, //angle
             Vector2.down, //cast direction
-            transform.localScale.y / 2, //cast distance
+            bounding_box.size.y / 2, //cast distance
             LayerMask.GetMask("Walls") //filters for only Walls layer
         );
 
