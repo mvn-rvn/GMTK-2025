@@ -40,12 +40,4 @@ public class EnemyHealth : MonoBehaviour
     {
         Destroy(gameObject);
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            Damage(1);
-        }
-    }
 }
