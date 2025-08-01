@@ -25,4 +25,11 @@ public class CamStaging : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void ActivateStage()
+    {
+        foreach (GameObject enemy in attached_enemies) {
+            enemy.GetComponent<EnemyLogic>().ActivateEnemy();
+        }
+    }
 }

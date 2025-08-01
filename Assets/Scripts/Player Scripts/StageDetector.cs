@@ -13,11 +13,13 @@ public class StageDetector : MonoBehaviour
     {
 
     }
-    
+
     void OnTriggerEnter2D(Collider2D col)
     {
         if (LayerMask.LayerToName(col.gameObject.layer) == "Cam Staging Area")
         {
+            col.gameObject.GetComponent<CamStaging>().ActivateStage();
+
             Camera.main.GetComponent<CamMovement>().staging_area = col.gameObject;
         }
     }

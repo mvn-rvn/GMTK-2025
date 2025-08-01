@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1919507906016158385}
   - component: {fileID: 8610188328395995619}
   - component: {fileID: 5886016458069685759}
+  - component: {fileID: 2844059272498279332}
   m_Layer: 0
   m_Name: Enemy Flying
   m_TagString: Untagged
@@ -126,6 +127,9 @@ MonoBehaviour:
   attackCooldown: 5
   variationY: 0.15
   lerpSpeed: 0.4
+  attackDistance: 0
+  moveSpeed: 0
+  hitStun: 1
 --- !u!58 &8610188328395995619
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -152,10 +156,10 @@ CircleCollider2D:
     m_Bits: 4294967295
   m_ContactCaptureLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1049088
   m_CallbackLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1049088
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
@@ -189,3 +193,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &2844059272498279332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726574249042942687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5af5e7013dfbc054bb74e767f3fd787f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

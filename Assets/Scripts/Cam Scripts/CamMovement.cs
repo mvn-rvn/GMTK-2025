@@ -49,7 +49,11 @@ public class CamMovement : MonoBehaviour
 
     void LateUpdate()
     {
-        if (target == null) { return; }
+        if (target == null)
+        {
+            Debug.Log("No target to follow");
+            return;
+        }
 
         if (staging_area == null)
         {
