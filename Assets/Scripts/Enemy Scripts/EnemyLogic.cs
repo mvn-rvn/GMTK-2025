@@ -46,6 +46,7 @@ public class EnemyLogic : MonoBehaviour
     private bool attacking;
     private bool sliding;
     private float attackTimer;
+    [HideInInspector] public bool isWalking;
 
     private void Start()
     {
@@ -75,6 +76,7 @@ public class EnemyLogic : MonoBehaviour
         rb.linearVelocity = Vector3.right * knockback;
 
         if (!attacking) hSTimer = hitStun;
+        if (grounded) isWalking = false;
         health.Damage(playerAtk.GetDamage());
     }
 
@@ -88,7 +90,11 @@ public class EnemyLogic : MonoBehaviour
             return;
         }
         else if (Vector3.Magnitude(distance) < spotDistance) awareness = State.Alerted;
-        else awareness = State.Idle;
+        else 
+        { 
+            awareness = State.Idle;
+            if (grounded) isWalking = false;
+        }
 
         if (!grounded) Floating();
     }
@@ -132,6 +138,7 @@ public class EnemyLogic : MonoBehaviour
     {
         hSTimer -= Time.fixedDeltaTime;
         attackTimer -= Time.fixedDeltaTime;
+        isWalking = true;
         if (awareness == State.Alerted && hSTimer < 0)
         {
             float variation = Vector3.Normalize(distance).x * moveSpeed * Time.fixedDeltaTime;
@@ -144,10 +151,13 @@ public class EnemyLogic : MonoBehaviour
     private IEnumerator MeleeAttack()
     {
         if (attackTimer > 0) yield break;
+        float lungeDistance = Vector3.Normalize(distance).x;
         attacking = true;
+        isWalking = false;
         hSTimer = 0; // no hitstun while attacking
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(Slide(400f * Time.fixedDeltaTime * 2f, 400f * Time.fixedDeltaTime * 2f, Vector3.Normalize(distance).x));
+        lungeDistance = Mathf.Max(Mathf.Abs(Vector3.Normalize(distance).x), Mathf.Abs(lungeDistance)) * Mathf.Sign(lungeDistance);
+        StartCoroutine(Slide(400f * Time.fixedDeltaTime * 2f, 400f * Time.fixedDeltaTime * 2f, lungeDistance));
         yield return new WaitForSeconds(1f);
         attacking = false;
         attackTimer = attackCooldown;
@@ -188,5 +198,11 @@ public class EnemyLogic : MonoBehaviour
             yield return null;
         }
         sliding = false;
+    }
+
+    public float DirectionFacing()
+    {
+        if (distance.x == 0) return 1;
+        return Mathf.Sign(distance.x);
     }
 }
