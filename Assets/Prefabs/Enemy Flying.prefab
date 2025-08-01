@@ -116,6 +116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efb71668eb77bf642a381f3264930245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grounded: 0
   knockbackMultiplier: 22
   drag: 0.2
   projectile: {fileID: 7695153080728237173, guid: 6e3f36c03187ad943a69d62e5fce8205, type: 3}

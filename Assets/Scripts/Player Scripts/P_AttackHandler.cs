@@ -102,13 +102,13 @@ public class P_AttackHandler : MonoBehaviour
             if (direction > 0)
             {
                 rb.linearVelocityX -= decceleration_per_sec * Time.deltaTime;
-                Mathf.Clamp(rb.linearVelocityX, 0f, Mathf.Infinity);
+                rb.linearVelocityX = Mathf.Clamp(rb.linearVelocityX, 0f, Mathf.Infinity);
                 Physics.SyncTransforms();
             }
             else
             {
                 rb.linearVelocityX += decceleration_per_sec * Time.deltaTime;
-                Mathf.Clamp(rb.linearVelocityX, -Mathf.Infinity, 0f);
+                rb.linearVelocityX = Mathf.Clamp(rb.linearVelocityX, -Mathf.Infinity, 0f);
                 Physics.SyncTransforms();
             }
             elapsed_time += Time.deltaTime;
