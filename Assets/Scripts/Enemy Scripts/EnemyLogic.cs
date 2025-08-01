@@ -13,26 +13,34 @@ public class EnemyLogic : MonoBehaviour
     [SerializeField] private ProjectileHandler projectile;
     [SerializeField] private float spotDistance;
     [SerializeField] private float activationDistance;
+    [SerializeField] private bool manuallyActivated;
     [SerializeField] private float attackCooldown = 5f;
 
     private GameObject player;
 
     private enum State
     {
-        Inactive,
-        Idle,
-        Alerted
+        Inactive, // not calculating logic
+        Idle, // calculating logic but no player in range
+        Alerted // player in range
     }
 
     private State awareness;
     private bool tracking;
     private Vector3 distance;
 
+    private float storedY;
+    [SerializeField] private float variationY;
+    private float lerpY = 0f;
+    private float lerpDir = 1;
+    [SerializeField] private float lerpSpeed = 0.05f;
+
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         health = gameObject.GetComponent<EnemyHealth>();
         player = FindAnyObjectByType<P_Movement>().gameObject;
+        storedY = gameObject.transform.position.y;
     }
 
     private void FixedUpdate()
@@ -58,15 +66,21 @@ public class EnemyLogic : MonoBehaviour
     {
         distance = player.transform.position - gameObject.transform.position;
 
-        if (Vector3.Magnitude(distance) > activationDistance)
+        if (Vector3.Magnitude(distance) > activationDistance || (manuallyActivated && awareness == State.Inactive))
         {
-            awareness = State.Idle;
+            awareness = State.Inactive;
             return;
         }
         else if (Vector3.Magnitude(distance) < spotDistance) awareness = State.Alerted;
-        else awareness = State.Inactive;
+        else awareness = State.Idle;
 
         if (awareness == State.Alerted && !tracking) StartCoroutine(ShootLoop());
+
+
+        if (lerpY == 1) lerpDir = -1f;
+        else if (lerpY == 0) lerpDir = 1f;
+        lerpY = Mathf.Clamp(lerpY + Time.deltaTime * lerpSpeed * lerpDir, 0, 1);
+        gameObject.transform.position = new Vector2(gameObject.transform.position.x, Mathf.SmoothStep(storedY - variationY, storedY + variationY, lerpY));
     }
 
     private IEnumerator ShootLoop()
@@ -76,8 +90,10 @@ public class EnemyLogic : MonoBehaviour
         {
             if (!ObstructionCheck())
             {
+                Debug.Log("shooting");
                 ProjectileHandler proj = Instantiate(projectile, transform.position, transform.rotation);
                 proj.SetDirection(Vector3.Normalize(distance));
+                Debug.Log(proj);
             }
             yield return new WaitForSeconds(attackCooldown);
         }
@@ -86,11 +102,21 @@ public class EnemyLogic : MonoBehaviour
 
     private bool ObstructionCheck()
     {
-        RaycastHit2D castHit = Physics2D.Raycast(transform.position, Vector3.Normalize(distance), Vector3.Magnitude(distance), LayerMask.GetMask("Walls", "Cam Bounds"));
+        RaycastHit2D castHit = Physics2D.Raycast(transform.position, Vector3.Normalize(distance), Vector3.Magnitude(distance), LayerMask.GetMask("Walls"));
         if(castHit)
         {
             return true;
         }
         return false;
+    }
+
+    public void ActivateEnemy()
+    {
+        awareness = State.Idle;
+    }
+
+    public void DeactivateEnemy()
+    {
+        awareness = State.Inactive;
     }
 }

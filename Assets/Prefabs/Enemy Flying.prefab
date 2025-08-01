@@ -119,9 +119,12 @@ MonoBehaviour:
   knockbackMultiplier: 22
   drag: 0.2
   projectile: {fileID: 7695153080728237173, guid: 6e3f36c03187ad943a69d62e5fce8205, type: 3}
-  spotDistance: 10
-  activationDistance: 20
+  spotDistance: 20
+  activationDistance: 30
+  manuallyActivated: 0
   attackCooldown: 5
+  variationY: 0.15
+  lerpSpeed: 0.4
 --- !u!58 &8610188328395995619
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -138,7 +141,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 67584
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
