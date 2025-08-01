@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class P_Health : MonoBehaviour
 {
-    public int health = 3;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public float health = 3f;
+
+    public void Damage(float val)
     {
-        
+        health -= val;
+
+        if (health <= 0) GameOver();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void GameOver()
     {
-        
+        Debug.Log("Game Over");
+        Destroy(gameObject);
     }
 }
