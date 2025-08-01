@@ -97,6 +97,7 @@ public class P_Movement : MonoBehaviour
         input_horizontal = move_action.ReadValue<Vector2>().x;
         float move_velocity = input_horizontal * move_speed * Time.fixedDeltaTime;
         rb.linearVelocityX = move_velocity;
+        Physics.SyncTransforms();
 
         if (input_horizontal != 0f)
         {
@@ -143,6 +144,7 @@ public class P_Movement : MonoBehaviour
         {
             elapsed_time += Time.deltaTime;
             rb.linearVelocityY = jump_speed;
+            Physics.SyncTransforms();
             yield return null;
         }
         jumping = false;
