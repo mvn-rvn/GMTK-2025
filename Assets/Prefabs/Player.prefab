@@ -222,6 +222,8 @@ MonoBehaviour:
   attacking: 0
   combo_attack_window: 0
   flipping: 1
+  baseDamage: 1
+  heavyDamage: 2
 --- !u!1 &5375064575047368866
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +376,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2762976193734700523
 Transform:
   m_ObjectHideFlags: 0
@@ -588,8 +590,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 960170715
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d8938200dcd97114fb021c2e930c91fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
