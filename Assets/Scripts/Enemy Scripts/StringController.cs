@@ -35,8 +35,8 @@ public class StringController : MonoBehaviour
     {
         if (snapped)
         {
-            Anchor1.transform.position = Vector3.Lerp(Anchor1.transform.position, enemy1.transform.position, snapSpeed);
-            Anchor2.transform.position = Vector3.Lerp(Anchor2.transform.position, enemy2.transform.position, snapSpeed);
+            if (enemy1 != null) Anchor1.transform.position = Vector3.Lerp(Anchor1.transform.position, enemy1.transform.position, snapSpeed);
+            if (enemy2 != null) Anchor2.transform.position = Vector3.Lerp(Anchor2.transform.position, enemy2.transform.position, snapSpeed);
 
             //can't be called string bc its a type
             foreach (GameObject str in strings)
@@ -72,8 +72,8 @@ public class StringController : MonoBehaviour
 
     public void SnapString()
     {
-        enemy1.GetComponent<EnemyHealth>().DetachString(this);
-        enemy2.GetComponent<EnemyHealth>().DetachString(this);
+        if (enemy1 != null) enemy1.GetComponent<EnemyHealth>().DetachString(this);
+        if (enemy2 != null) enemy2.GetComponent<EnemyHealth>().DetachString(this);
         PlayEffect();
 
         snapped = true;
