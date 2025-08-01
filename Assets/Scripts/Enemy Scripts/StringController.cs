@@ -74,8 +74,13 @@ public class StringController : MonoBehaviour
     {
         enemy1.GetComponent<EnemyHealth>().DetachString(this);
         enemy2.GetComponent<EnemyHealth>().DetachString(this);
-        Instantiate(particleEffect, stringCenter.transform, false);
+        PlayEffect();
 
         snapped = true;
+    }
+
+    public void PlayEffect()
+    {
+        Instantiate(particleEffect, stringCenter.transform, false);
     }
 }
