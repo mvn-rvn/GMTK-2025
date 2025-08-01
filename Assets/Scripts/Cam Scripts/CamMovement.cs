@@ -37,6 +37,8 @@ public class CamMovement : MonoBehaviour
         right_bounds = right_bounds_object.GetComponent<BoxCollider2D>();
         left_bounds.enabled = false;
         right_bounds.enabled = false;
+
+        transform.position = GameObject.Find("Checkpoint Manager").GetComponent<Chkpnt_Ctrl>().GetCheckpointPos();
     }
 
     // Update is called once per frame
@@ -47,6 +49,8 @@ public class CamMovement : MonoBehaviour
 
     void LateUpdate()
     {
+        if (target == null) { return; }
+
         if (staging_area == null)
         {
             left_bounds.enabled = false;
