@@ -127,7 +127,7 @@ public class P_Movement : MonoBehaviour
             0f, //angle
             Vector2.down, //cast direction
             bounding_box.size.y / 2, //cast distance
-            LayerMask.GetMask("Walls") //filters for only Walls layer
+            LayerMask.GetMask("Walls", "Cam Bounds") //filters for only Walls layer
         );
 
         if (boxcast_hit)
