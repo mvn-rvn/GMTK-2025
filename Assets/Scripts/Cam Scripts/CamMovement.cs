@@ -13,6 +13,7 @@ public class CamMovement : MonoBehaviour
     float original_size;
     Vector2 original_scale;
 
+    [HideInInspector]
     public GameObject staging_area;
     Camera cam;
 
@@ -48,6 +49,9 @@ public class CamMovement : MonoBehaviour
     {
         if (staging_area == null)
         {
+            left_bounds.enabled = false;
+            right_bounds.enabled = false;
+
             transform.position = Vector2.SmoothDamp(transform.position, target.transform.position, ref movement_velocity, smoothing_time);
             transform.position = new Vector3(transform.position.x, transform.position.y, original_z);
 
@@ -74,14 +78,6 @@ public class CamMovement : MonoBehaviour
             );
 
             transform.localScale = Vector2.SmoothDamp(transform.localScale, adjusted_scale, ref scale_velocity, smoothing_time);
-        }
-    }
-
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        if (LayerMask.LayerToName(col.gameObject.layer) == "Cam Staging Area")
-        {
-            staging_area = col.gameObject;
         }
     }
 }

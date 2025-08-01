@@ -18,6 +18,8 @@ public class CamStaging : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        attached_enemies.RemoveAll(enemy => enemy == null);
+
         if (attached_enemies.Count == 0)
         {
             Destroy(gameObject);
