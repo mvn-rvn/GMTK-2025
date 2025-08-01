@@ -61,12 +61,13 @@ public class StringController : MonoBehaviour
         //String Group 2
         Anchor2.transform.position = stringCenter.transform.position;
         stringEnd2.transform.position = enemy2.transform.position;
+
+        if (health <= 0) SnapString();
     }
 
     public void Damage(float val)
     {
         health -= val;
-        if (health <= 0) SnapString();
     }
 
     public void SnapString()
