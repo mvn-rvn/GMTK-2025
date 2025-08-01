@@ -76,6 +76,7 @@ public class StringController : MonoBehaviour
         if (enemy2 != null) enemy2.GetComponent<EnemyHealth>().DetachString(this);
         PlayEffect();
 
+        FindAnyObjectByType<P_Health>().Heal(1);
         snapped = true;
     }
 

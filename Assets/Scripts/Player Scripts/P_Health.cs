@@ -11,7 +11,12 @@ public class P_Health : MonoBehaviour
         if (health <= 0) GameOver();
     }
 
-    private void GameOver()
+    public void Heal(float val)
+    {
+        health = Mathf.Clamp(health + val, 0, 3);
+    }
+
+    public void GameOver()
     {
         Debug.Log("Game Over");
         Destroy(gameObject);

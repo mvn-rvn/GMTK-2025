@@ -64,9 +64,9 @@ public class EnemyLogic : MonoBehaviour
 
     private void Update()
     {
-        distance = player.transform.position - gameObject.transform.position;
+        if (player != null) distance = player.transform.position - gameObject.transform.position;
 
-        if (Vector3.Magnitude(distance) > activationDistance || (manuallyActivated && awareness == State.Inactive))
+        if (player == null || Vector3.Magnitude(distance) > activationDistance || (manuallyActivated && awareness == State.Inactive))
         {
             awareness = State.Inactive;
             return;
@@ -90,10 +90,8 @@ public class EnemyLogic : MonoBehaviour
         {
             if (!ObstructionCheck())
             {
-                Debug.Log("shooting");
                 ProjectileHandler proj = Instantiate(projectile, transform.position, transform.rotation);
                 proj.SetDirection(Vector3.Normalize(distance));
-                Debug.Log(proj);
             }
             yield return new WaitForSeconds(attackCooldown);
         }
