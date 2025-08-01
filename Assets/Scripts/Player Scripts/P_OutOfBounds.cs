@@ -19,7 +19,7 @@ public class P_OutOfBounds : MonoBehaviour
         if (LayerMask.LayerToName(col.gameObject.layer) == "OOB")
         {
             //instant fucking death
-            gameObject.GetComponent<P_Health>().Damage(999f);
+            gameObject.GetComponent<P_Health>().GameOver();
         }
     }
 }

@@ -28,7 +28,7 @@ public class Chkpnt_Ctrl : MonoBehaviour
     void Update()
     {
         //PLACEHOLDER TO TEST CHECKPOINT FUNCTIONALITY
-        //if (Input.GetKeyDown(KeyCode.R)) { Reload(); }
+        if (Input.GetKeyDown(KeyCode.R)) { Reload(); }
     }
 
     public void SwapCheckpoint(GameObject new_checkpoint)
