@@ -34,6 +34,8 @@ public class P_Movement : MonoBehaviour
     [HideInInspector]
     public float direction = 1f;
 
+    private bool controllable = true;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -54,6 +56,12 @@ public class P_Movement : MonoBehaviour
         {
             double_jump_available = true;
         }
+        else
+        {
+            controllable = true;
+        }
+
+        if (!controllable) return;
 
         if (grounded && InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
         {
@@ -84,6 +92,8 @@ public class P_Movement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!controllable) return;
+
         input_horizontal = move_action.ReadValue<Vector2>().x;
         float move_velocity = input_horizontal * move_speed * Time.fixedDeltaTime;
         rb.linearVelocityX = move_velocity;
@@ -136,5 +146,10 @@ public class P_Movement : MonoBehaviour
             yield return null;
         }
         jumping = false;
+    }
+
+    public void SetControllable(bool val)
+    {
+        controllable = val;
     }
 }

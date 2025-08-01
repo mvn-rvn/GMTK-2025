@@ -31,6 +31,10 @@ public class P_AttackHandler : MonoBehaviour
     [HideInInspector]
     public bool flipping = true;
 
+    [SerializeField] private float baseDamage = 1f;
+    [SerializeField] private float heavyDamage = 2f;
+    private float damageDealt;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -129,8 +133,10 @@ public class P_AttackHandler : MonoBehaviour
 
     IEnumerator FirstGroundedAttack()
     {
-        p_movement.enabled = false;
+        damageDealt = baseDamage;
+        p_movement.SetControllable(false);
         attacking = true;
+        flipping = false;
         animator.Play("AttackPrototype1");
         if (p_movement.input_horizontal != 0)
         {
@@ -153,7 +159,8 @@ public class P_AttackHandler : MonoBehaviour
         yield return new WaitForSeconds(1f / 14f);
         if (!attacking)
         {
-            p_movement.enabled = true;
+            p_movement.SetControllable(true);
+            flipping = true;
         }
         yield return new WaitForSeconds(0.2f);
         combo_attack_window = false;
@@ -161,8 +168,10 @@ public class P_AttackHandler : MonoBehaviour
 
     IEnumerator SecondGroundedAttack()
     {
-        p_movement.enabled = false;
+        damageDealt = heavyDamage;
+        p_movement.SetControllable(false);
         attacking = true;
+        flipping = false;
         combo_attack_window = false;
         animator.Play("AttackPrototype2");
         if (slide_running != null)
@@ -179,11 +188,13 @@ public class P_AttackHandler : MonoBehaviour
         yield return new WaitForSeconds(1f / 14f);
         yield return new WaitForSeconds(1f / 14f);
         attacking = false;
-        p_movement.enabled = true;
+        flipping = true;
+        p_movement.SetControllable(true);
     }
 
     IEnumerator FirstAerialAttack()
     {
+        damageDealt = baseDamage;
         flipping = false;
         attacking = true;
         animator.Play("AttackJumpPrototype1");
@@ -205,6 +216,7 @@ public class P_AttackHandler : MonoBehaviour
     
        IEnumerator SecondAerialAttack()
     {
+        damageDealt = baseDamage;
         yield return null;
         flipping = false;
         attacking = true;
@@ -220,4 +232,6 @@ public class P_AttackHandler : MonoBehaviour
         attacking = false;
         flipping = true;
     }
+
+    public float GetDamage() { return damageDealt; }
 }
