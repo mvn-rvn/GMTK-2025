@@ -79,7 +79,7 @@ public class P_AttackHandler : MonoBehaviour
             attack_input_buffer = true;
         }
 
-        if (attack_action.WasPressedThisFrame() && fastfall_action.ReadValue<Vector2>().y == -1f && !attacking && !combo_attack_window && !p_movement.grounded)
+        if (attack_action.WasPressedThisFrame() && fastfall_action.ReadValue<Vector2>().y == -1f && !attacking && !p_movement.grounded)
         {
             StartCoroutine(GroundPound());
             return;
