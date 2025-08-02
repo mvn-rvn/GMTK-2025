@@ -1401,13 +1401,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 736026445476264064, guid: 41763e50c43eb62489e69ac813e9f724, type: 3}
+      propertyPath: attached_enemies.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 736026445476264064, guid: 41763e50c43eb62489e69ac813e9f724, type: 3}
       propertyPath: 'attached_enemies.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1408733221}
     - target: {fileID: 736026445476264064, guid: 41763e50c43eb62489e69ac813e9f724, type: 3}
       propertyPath: 'attached_enemies.Array.data[1]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 538505399}
     - target: {fileID: 736026445476264064, guid: 41763e50c43eb62489e69ac813e9f724, type: 3}
       propertyPath: 'attached_enemies.Array.data[2]'
       value: 

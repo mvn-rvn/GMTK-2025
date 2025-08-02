@@ -39,11 +39,18 @@ public class P_Health : MonoBehaviour
         float elapsedTime = 0f;
         while (elapsedTime < invincibilityTime)
         {
-            renderer.enabled = !renderer.enabled;
-            yield return new WaitForSeconds(0.1f);
-            elapsedTime += 0.1f;
+            if (renderer.color == new Color(1f, 1f, 1f, 1f))
+            {
+                renderer.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            }
+            else
+            {
+                renderer.color = new Color(1f, 1f, 1f, 1f);
+            }
+            yield return new WaitForSeconds(0.2f);
+            elapsedTime += 0.2f;
         }
-        renderer.enabled = true;
+        renderer.color = new Color(1f, 1f, 1f, 1f);
         invincible = false;
     }
 }
