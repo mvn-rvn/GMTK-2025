@@ -276,7 +276,6 @@ public class P_AttackHandler : MonoBehaviour
             rb.linearVelocity = original_velocity / 2f;
             yield return null;
             elapsed_time += Time.deltaTime;
-            Debug.Log(rb.linearVelocity);
         }
 
         gp_hitbox.enabled = true;
