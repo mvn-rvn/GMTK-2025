@@ -20,12 +20,7 @@ public class P_Movement : MonoBehaviour
     [HideInInspector]
     public float input_horizontal = 0f;
     public float jump_variability_time = 0.25f;
-    bool fast_falling = false;
 
-    public float normal_gravity = 2.5f;
-    public float fastfall_gravity = 3f;
-    public float fastfall_vcap = 0f;
-    InputAction fastfall_action;
 
     bool double_jump_available = false;
     [HideInInspector]
@@ -36,6 +31,8 @@ public class P_Movement : MonoBehaviour
 
     private bool controllable = true;
 
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,7 +41,6 @@ public class P_Movement : MonoBehaviour
         hurtbox = gameObject.GetComponent<CapsuleCollider2D>();
 
         move_action = InputSystem.actions.FindAction("Move");
-        fastfall_action = InputSystem.actions.FindAction("Fastfall");
     }
 
     // Update is called once per frame
@@ -58,7 +54,7 @@ public class P_Movement : MonoBehaviour
         }
         else
         {
-            controllable = true;
+            //controllable = true;
         }
 
         if (!controllable) return;
@@ -74,20 +70,7 @@ public class P_Movement : MonoBehaviour
             double_jumped = true;
         }
 
-        fast_falling = (fastfall_action.ReadValue<Vector2>().y == -1f) && !jumping;
-
-        if (fast_falling)
-        {
-            if (rb.linearVelocityY > fastfall_vcap && !grounded)
-            {
-                rb.linearVelocityY = fastfall_vcap;
-            }
-            rb.gravityScale = fastfall_gravity;
-        }
-        else
-        {
-            rb.gravityScale = normal_gravity;
-        }
+        
     }
 
     void FixedUpdate()

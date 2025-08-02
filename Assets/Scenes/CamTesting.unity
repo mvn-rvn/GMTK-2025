@@ -1207,10 +1207,14 @@ PrefabInstance:
     - target: {fileID: 3819532508065054008, guid: 8882149ff2c5cbf479e5ee2c92b13a94, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6a975fed9ae1e0149815af504a78768b, type: 3}
+      objectReference: {fileID: 21300000, guid: 6b9718a8b29873943950ea94c7332dde, type: 3}
     - target: {fileID: 4748875832939128137, guid: 8882149ff2c5cbf479e5ee2c92b13a94, type: 3}
       propertyPath: jump_speed
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8472512871150183843, guid: 8882149ff2c5cbf479e5ee2c92b13a94, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8561483211165288355, guid: 8882149ff2c5cbf479e5ee2c92b13a94, type: 3}
       propertyPath: m_LocalPosition.x

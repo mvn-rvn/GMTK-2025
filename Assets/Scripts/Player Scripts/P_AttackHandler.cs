@@ -13,6 +13,7 @@ public class P_AttackHandler : MonoBehaviour
     CircleCollider2D g_attack_2_hitbox;
     CircleCollider2D a_attack_1_hitbox;
     CircleCollider2D a_attack_2_hitbox;
+    BoxCollider2D gp_hitbox;
 
     Vector2 scale_original;
     Vector2 position_original;
@@ -35,6 +36,14 @@ public class P_AttackHandler : MonoBehaviour
     [SerializeField] private float heavyDamage = 2f;
     private float damageDealt;
 
+
+    InputAction fastfall_action;
+
+
+    [SerializeField]
+    float gp_speed = 30f;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -46,11 +55,14 @@ public class P_AttackHandler : MonoBehaviour
         g_attack_2_hitbox = GameObject.Find("Grounded Attack 2").GetComponent<CircleCollider2D>();
         a_attack_1_hitbox = GameObject.Find("Aerial Attack 1").GetComponent<CircleCollider2D>();
         a_attack_2_hitbox = GameObject.Find("Aerial Attack 2").GetComponent<CircleCollider2D>();
+        gp_hitbox = GameObject.Find("Ground Pound").GetComponent<BoxCollider2D>();
 
         scale_original = transform.localScale;
         position_original = transform.localPosition;
 
         attack_action = InputSystem.actions.FindAction("Attack");
+
+        fastfall_action = InputSystem.actions.FindAction("Fastfall");
     }
 
     // Update is called once per frame
@@ -65,6 +77,12 @@ public class P_AttackHandler : MonoBehaviour
         if (attack_action.WasPressedThisFrame() && attack_buffer_window)
         {
             attack_input_buffer = true;
+        }
+
+        if (attack_action.WasPressedThisFrame() && fastfall_action.ReadValue<Vector2>().y == -1f && !attacking && !combo_attack_window && !p_movement.grounded)
+        {
+            StartCoroutine(GroundPound());
+            return;
         }
 
         if (attack_action.WasPressedThisFrame() && p_movement.grounded && !attacking && !combo_attack_window)
@@ -196,6 +214,7 @@ public class P_AttackHandler : MonoBehaviour
 
     IEnumerator FirstAerialAttack()
     {
+        p_movement.SetControllable(true);
         damageDealt = baseDamage;
         flipping = false;
         attacking = true;
@@ -214,10 +233,12 @@ public class P_AttackHandler : MonoBehaviour
         yield return new WaitForSeconds(1f / 14f);
         yield return new WaitForSeconds(0.2f);
         combo_attack_window = false;
+        p_movement.SetControllable(true);
     }
-    
-       IEnumerator SecondAerialAttack()
+
+    IEnumerator SecondAerialAttack()
     {
+        p_movement.SetControllable(true);
         damageDealt = baseDamage;
         yield return null;
         flipping = false;
@@ -233,6 +254,47 @@ public class P_AttackHandler : MonoBehaviour
         yield return new WaitForSeconds(1f / 14f);
         attacking = false;
         flipping = true;
+        p_movement.SetControllable(true);
+    }
+
+    IEnumerator GroundPound()
+    {
+        p_movement.SetControllable(false);
+
+        damageDealt = heavyDamage;
+
+        float original_gravity = rb.gravityScale;
+
+        Vector2 original_velocity = rb.linearVelocity;
+        rb.gravityScale = 0f;
+        animator.Play("GroundPoundWindupPrototype");
+        flipping = false;
+        attacking = true;
+        float elapsed_time = 0f;
+        while (elapsed_time < 3f / 12f)
+        {
+            rb.linearVelocity = original_velocity / 2f;
+            yield return null;
+            elapsed_time += Time.deltaTime;
+            Debug.Log(rb.linearVelocity);
+        }
+
+        gp_hitbox.enabled = true;
+
+        while (!p_movement.grounded)
+        {
+            rb.linearVelocity = new Vector2(0, -gp_speed);
+            yield return null;
+        }
+
+        gp_hitbox.enabled = false;
+        rb.gravityScale = original_gravity;
+
+        yield return new WaitForSeconds(3f / 12f);
+
+        attacking = false;
+        flipping = true;
+        p_movement.SetControllable(true);
     }
 
     public float GetDamage() { return damageDealt; }
