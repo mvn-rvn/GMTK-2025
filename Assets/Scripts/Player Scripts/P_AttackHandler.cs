@@ -273,6 +273,7 @@ public class P_AttackHandler : MonoBehaviour
         float elapsed_time = 0f;
         while (elapsed_time < 3f / 12f)
         {
+            p_movement.SetControllable(false);
             rb.linearVelocity = original_velocity / 2f;
             yield return null;
             elapsed_time += Time.deltaTime;
@@ -282,6 +283,7 @@ public class P_AttackHandler : MonoBehaviour
 
         while (!p_movement.grounded)
         {
+            p_movement.SetControllable(false);
             rb.linearVelocity = new Vector2(0, -gp_speed);
             yield return null;
         }
