@@ -47,6 +47,7 @@ public class EnemyLogic : MonoBehaviour
     private bool sliding;
     private float attackTimer;
     [HideInInspector] public bool isWalking;
+    private CapsuleCollider2D hitbox;
 
     private void Start()
     {
@@ -54,6 +55,7 @@ public class EnemyLogic : MonoBehaviour
         health = gameObject.GetComponent<EnemyHealth>();
         player = FindAnyObjectByType<P_Movement>().gameObject;
         storedY = gameObject.transform.position.y;
+        if (grounded) hitbox = gameObject.transform.GetComponentInChildren<CapsuleCollider2D>();
     }
 
     private void FixedUpdate()
@@ -70,6 +72,7 @@ public class EnemyLogic : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.gameObject.layer == 10) return;
         //Handles getting hit by the player
         P_AttackHandler playerAtk = collision.GetComponentInParent<P_AttackHandler>();
         float knockback = Vector3.Normalize(gameObject.transform.position - playerAtk.gameObject.transform.position).x * knockbackMultiplier;
@@ -155,10 +158,15 @@ public class EnemyLogic : MonoBehaviour
         attacking = true;
         isWalking = false;
         hSTimer = 0; // no hitstun while attacking
+        gameObject.GetComponent<EnemyAnimHandler>().AttackAnim();
         yield return new WaitForSeconds(0.5f);
         lungeDistance = Mathf.Max(Mathf.Abs(Vector3.Normalize(distance).x), Mathf.Abs(lungeDistance)) * Mathf.Sign(lungeDistance);
         StartCoroutine(Slide(400f * Time.fixedDeltaTime * 2f, 400f * Time.fixedDeltaTime * 2f, lungeDistance));
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.6f);
+        hitbox.enabled = true;
+        yield return new WaitForSeconds(0.2f);
+        hitbox.enabled = false;
+        yield return new WaitForSeconds(0.2f);
         attacking = false;
         attackTimer = attackCooldown;
 
@@ -205,4 +213,11 @@ public class EnemyLogic : MonoBehaviour
         if (distance.x == 0) return 1;
         return Mathf.Sign(distance.x);
     }
+
+    public bool IsAttacking()
+    {
+        return attacking;
+    }
+
+
 }

@@ -8,6 +8,8 @@ public class EnemyAnimHandler : MonoBehaviour
 
     Vector2 scale_original;
 
+    private bool atkToggle;
+
     void Awake()
     {
         logic = gameObject.GetComponent<EnemyLogic>();
@@ -32,5 +34,10 @@ public class EnemyAnimHandler : MonoBehaviour
             animator.SetBool("Standing", true);
             animator.SetBool("Walking", false);
         }
+    }
+
+    public void AttackAnim()
+    {
+        animator.Play("EnemyAttackWarmup");
     }
 }
