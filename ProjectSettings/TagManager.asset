@@ -22,7 +22,7 @@ TagManager:
   - 
   - Cam Staging Area
   - Cam Bounds
-  - 
+  - Dialogue Trigger
   - Checkpoint
   - 
   - OOB
@@ -52,6 +52,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 960170715
+    locked: 0
+  - name: UI
+    uniqueID: 494501923
     locked: 0
   m_RenderingLayers:
   - Default
