@@ -4,13 +4,14 @@ using System.Collections;
 
 public class EnemyLogic : MonoBehaviour
 {
-    [SerializeField] private bool grounded;
+    public bool grounded;
 
     [SerializeField] private float knockbackMultiplier;
     [SerializeField] private float drag;
 
     private Rigidbody2D rb;
     private EnemyHealth health;
+    private EnemyAnimHandler anim;
 
     [SerializeField] private ProjectileHandler projectile;
     [SerializeField] private float spotDistance;
@@ -37,6 +38,11 @@ public class EnemyLogic : MonoBehaviour
     private float lerpY = 0f;
     private float lerpDir = 1;
     [SerializeField] private float lerpSpeed = 0.05f;
+    private float turnAngle;
+    [SerializeField] private float turnSpeed;
+    private int count;
+    private Quaternion originalRotation;
+    private Vector3 storedPos;
 
     // Grounded Exclusive
     [SerializeField] private float attackDistance;
@@ -56,6 +62,8 @@ public class EnemyLogic : MonoBehaviour
         player = FindAnyObjectByType<P_Movement>().gameObject;
         storedY = gameObject.transform.position.y;
         if (grounded) hitbox = gameObject.transform.GetComponentInChildren<CapsuleCollider2D>();
+        anim = gameObject.GetComponent<EnemyAnimHandler>();
+        originalRotation = gameObject.transform.rotation;
     }
 
     private void FixedUpdate()
@@ -64,9 +72,11 @@ public class EnemyLogic : MonoBehaviour
         if (rb.linearVelocity.magnitude > 0)
         {
             float velMod = 1 - drag;
-            rb.linearVelocity *= velMod;
+            if (!grounded) rb.linearVelocity *= velMod;
+            else rb.linearVelocityX *= velMod;
         }
         if (attacking) return;
+        attackTimer -= Time.fixedDeltaTime;
         if (grounded) Walking();
     }
 
@@ -76,7 +86,7 @@ public class EnemyLogic : MonoBehaviour
         //Handles getting hit by the player
         P_AttackHandler playerAtk = collision.GetComponentInParent<P_AttackHandler>();
         float knockback = Vector3.Normalize(gameObject.transform.position - playerAtk.gameObject.transform.position).x * knockbackMultiplier;
-        rb.linearVelocity = Vector3.right * knockback;
+        rb.linearVelocityX = knockback;
 
         if (!attacking) hSTimer = hitStun;
         if (grounded) isWalking = false;
@@ -85,6 +95,9 @@ public class EnemyLogic : MonoBehaviour
 
     private void Update()
     {
+        if (tracking) gameObject.transform.rotation = Quaternion.RotateTowards(gameObject.transform.rotation, Quaternion.Euler(0, 0, turnAngle + 120), turnSpeed * Time.deltaTime);
+        else gameObject.transform.rotation = Quaternion.RotateTowards(gameObject.transform.rotation, originalRotation, turnSpeed * Time.deltaTime);
+
         if (player != null) distance = player.transform.position - gameObject.transform.position;
 
         if (player == null || Vector3.Magnitude(distance) > activationDistance || (manuallyActivated && awareness == State.Inactive))
@@ -104,17 +117,26 @@ public class EnemyLogic : MonoBehaviour
 
     private IEnumerator ShootLoop()
     {
+        if (attackTimer > 0 || !(awareness == State.Alerted) || ObstructionCheck()) yield break;
         tracking = true;
-        while (awareness == State.Alerted)
+        attacking = true;
+        count = 0;
+        storedPos = distance;
+        turnAngle = Mathf.Atan2(player.transform.position.y - transform.position.y, player.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
+        anim.AttackAnim();
+        while (awareness == State.Alerted && count <= 15)
         {
-            if (!ObstructionCheck())
+            count++;
+            if (count == 11)
             {
                 ProjectileHandler proj = Instantiate(projectile, transform.position, transform.rotation);
-                proj.SetDirection(Vector3.Normalize(distance));
+                proj.SetDirection(Vector3.Normalize(storedPos), turnAngle);
+                tracking = false;
             }
-            yield return new WaitForSeconds(attackCooldown);
+            yield return new WaitForSeconds(1/8f);
         }
-        tracking = false;
+        attackTimer = attackCooldown;
+        attacking = false;
     }
 
     private bool ObstructionCheck()
@@ -129,7 +151,7 @@ public class EnemyLogic : MonoBehaviour
 
     private void Floating()
     {
-        if (awareness == State.Alerted && !tracking) StartCoroutine(ShootLoop());
+        if (awareness == State.Alerted && !attacking) StartCoroutine(ShootLoop());
 
         if (lerpY == 1) lerpDir = -1f;
         else if (lerpY == 0) lerpDir = 1f;
@@ -140,12 +162,11 @@ public class EnemyLogic : MonoBehaviour
     private void Walking()
     {
         hSTimer -= Time.fixedDeltaTime;
-        attackTimer -= Time.fixedDeltaTime;
-        isWalking = true;
         if (awareness == State.Alerted && hSTimer < 0)
         {
+            isWalking = true;
             float variation = Vector3.Normalize(distance).x * moveSpeed * Time.fixedDeltaTime;
-            rb.linearVelocity = new Vector2(variation, rb.linearVelocity.y);
+            rb.linearVelocityX = variation;
 
             if (Vector3.Magnitude(distance) < attackDistance) StartCoroutine(MeleeAttack());
         }
@@ -158,15 +179,15 @@ public class EnemyLogic : MonoBehaviour
         attacking = true;
         isWalking = false;
         hSTimer = 0; // no hitstun while attacking
-        gameObject.GetComponent<EnemyAnimHandler>().AttackAnim();
+        anim.AttackAnim();
         yield return new WaitForSeconds(0.5f);
         lungeDistance = Mathf.Max(Mathf.Abs(Vector3.Normalize(distance).x), Mathf.Abs(lungeDistance)) * Mathf.Sign(lungeDistance);
         StartCoroutine(Slide(400f * Time.fixedDeltaTime * 2f, 400f * Time.fixedDeltaTime * 2f, lungeDistance));
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.4f);
         hitbox.enabled = true;
         yield return new WaitForSeconds(0.2f);
         hitbox.enabled = false;
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
         attacking = false;
         attackTimer = attackCooldown;
 

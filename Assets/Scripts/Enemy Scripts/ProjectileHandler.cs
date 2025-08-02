@@ -10,9 +10,11 @@ public class ProjectileHandler : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
-    public void SetDirection(Vector3 dir)
+    public void SetDirection(Vector3 dir, float angle)
     {
         rb.linearVelocity = dir * speed;
+        
+        gameObject.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 90));
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
