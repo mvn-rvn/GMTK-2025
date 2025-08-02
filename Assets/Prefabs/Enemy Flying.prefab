@@ -129,7 +129,7 @@ MonoBehaviour:
   attackCooldown: 5
   variationY: 0.15
   lerpSpeed: 0.4
-  turnSpeed: 10
+  turnSpeed: 200
   attackDistance: 0
   moveSpeed: 0
   hitStun: 1
