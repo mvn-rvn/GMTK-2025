@@ -2,18 +2,19 @@ using UnityEngine;
 
 public class StringCenterHandler : MonoBehaviour
 {
-    [SerializeField] private float slashHealth = 2f;
+    [SerializeField] private float damageMult = 5;
+    private StringController stringCont;
+    private void Awake()
+    {
+        stringCont = GetComponentInParent<StringController>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        slashHealth -= 1f;
+        P_AttackHandler playerAtk = collision.GetComponentInParent<P_AttackHandler>();
 
-        if (slashHealth <= 0)
-        {
-            gameObject.transform.parent.GetComponent<StringController>().SnapString();
-            Destroy(this);
-        }
-        else gameObject.transform.parent.GetComponent<StringController>().PlayEffect();
+        if (stringCont.health > playerAtk.GetDamage() * damageMult) stringCont.PlayEffect();
+        stringCont.Damage(playerAtk.GetDamage() * damageMult);
     }
 
 }

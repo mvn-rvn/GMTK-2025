@@ -8,8 +8,6 @@ public class EnemyAnimHandler : MonoBehaviour
 
     Vector2 scale_original;
 
-    private bool atkToggle;
-
     void Awake()
     {
         logic = gameObject.GetComponent<EnemyLogic>();
@@ -22,7 +20,9 @@ public class EnemyAnimHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.localScale = new Vector2(scale_original.x * -logic.DirectionFacing(), scale_original.y);
+        if (logic.grounded) transform.localScale = new Vector2(scale_original.x * -logic.DirectionFacing(), scale_original.y);
+
+        if (!logic.grounded) return;
 
         if (logic.isWalking)
         {
@@ -38,6 +38,7 @@ public class EnemyAnimHandler : MonoBehaviour
 
     public void AttackAnim()
     {
-        animator.Play("EnemyAttackWarmup");
+        if (logic.grounded) animator.Play("EnemyAttack");
+        else animator.Play("FlyingAttack");
     }
 }
